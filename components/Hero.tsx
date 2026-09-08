@@ -39,14 +39,11 @@ export default function Hero() {
             </div>
           </div>
         </div>
-        <div className="orb-wrap">
-          <div className="orb">
-            {/* ACA REEMPLAZAR: foto real de Matías, por ejemplo
-                <img src="/foto-matias.jpg" alt="Matías Oviedo" className="orb-avatar" />
-                con la imagen puesta en /public. */}
-            <span className="orb-placeholder-text">[ foto de Matías ]</span>
-          </div>
-        </div>
+        {/*
+          El Hero va sin columna visual a la derecha: el bloque de texto ocupa
+          todo el ancho del .wrap (ver `.hero-grid` en app/globals.css). El
+          único Tute del sitio es el widget flotante de la esquina (TuteWidget).
+        */}
       </div>
     </section>
   );

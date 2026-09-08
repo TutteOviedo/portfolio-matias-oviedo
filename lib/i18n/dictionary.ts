@@ -31,8 +31,8 @@ export const dictionary = {
   // ---------------------------------------------------------------- HERO
   hero: {
     eyebrow: {
-      es: "disponible_para_roles: IA · agentes · soporte de aplicaciones",
-      en: "available_for_roles: AI · agents · application support",
+      es: "status: soporte de aplicaciones → IA & agentes",
+      en: "status: application support → AI & agents",
     },
     // El <h1> se arma con estos fragmentos + <br/> + <span> de acento:
     //   {titleLine1}<br/>{titleLine2}<br/>{titleLine3Lead}<span>{titleAccent}</span>.
@@ -41,7 +41,9 @@ export const dictionary = {
     titleLine3Lead: { es: "Ahora, resuelvo problemas ", en: "Now, I solve " },
     titleAccent: {
       es: "reales con agentes de IA",
-      en: "real problems with AI agents",
+      // Espacio no separable entre "with" y "AI" para que "with" no quede
+      // colgando solo al final de una línea.
+      en: "real problems with AI agents",
     },
     lead: {
       es: "Soy Matías Oviedo. Hago soporte de aplicaciones web y mobile, y poco a poco fui metiéndome en programación, entornos cloud (AWS) e inteligencia artificial - hoy diseño y testeo sistemas que automatizan lo que antes hacía a mano.",
