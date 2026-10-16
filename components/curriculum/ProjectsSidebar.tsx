@@ -7,8 +7,8 @@ import { dictionary } from "@/lib/i18n/dictionary";
 // diccionario (Cloud Resume Challenge, Tute, JobFit).
 const PROJECT_LINKS = [
   "https://github.com/TutteOviedo/portfolio-matias-oviedo",
-  // ACA REEMPLAZAR: URL real del repo de Tute
-  "#",
+  // Tute vive en el repo del portfolio (widget y código de la Lambda).
+  "https://github.com/TutteOviedo/portfolio-matias-oviedo",
   "https://github.com/TutteOviedo/job-fit",
 ];
 
@@ -36,7 +36,7 @@ export default function ProjectsSidebar() {
             <a
               href={PROJECT_LINKS[i]}
               target="_blank"
-              rel="noreferrer"
+              rel="noopener noreferrer"
               className="card-link"
             >
               {t(d.githubLink)}

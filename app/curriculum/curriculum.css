@@ -232,6 +232,12 @@
   height: 1px;
   background: var(--border);
 }
+/* globals.css le pone border-bottom a todas las <section> (separador entre
+   secciones del home). Acá el separador ya es la línea del .section-label,
+   así que se saca el borde para que no quede una línea doble. */
+.cv-page section {
+  border-bottom: none;
+}
 
 /* ============ CARDS ============ */
 .cv-page .cv-card {

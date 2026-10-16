@@ -139,8 +139,6 @@ Buscá `ACA REEMPLAZAR` en el código. Lo que sigue pendiente hoy:
 
 - **`components/EvalsContent.tsx`** - los casos de `/evals` siguen siendo data
   de ejemplo a mano; hay que reemplazarlos por corridas reales de evals.
-- **`components/curriculum/ProjectsSidebar.tsx`** - la URL del repo de Tute
-  en el sidebar del CV (hoy apunta a `#`).
 - **`public/robots.txt`** - aflojar las reglas ahora que el sitio es público
   (ver arriba).
 - **`.env.local.example`** - el comentario todavía habla de "una vez que
