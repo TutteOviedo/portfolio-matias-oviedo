@@ -171,6 +171,14 @@ export const dictionary = {
       es: "Ver cómo me testean →",
       en: "See how I'm tested →",
     },
+
+    // Mensaje de fallback cuando el backend real no responde bien (falla el
+    // fetch, o la respuesta no trae "reply"). El caso de rate limit (429)
+    // no usa esto - ese viene con su propio "reply" y se muestra tal cual.
+    errorReply: {
+      es: "Uy, tuve un problema para responder. Probá de nuevo en un rato.",
+      en: "Oops, I had trouble replying. Try again in a bit.",
+    },
   },
 
   // ----------------------------------------------------------------- EVALS
