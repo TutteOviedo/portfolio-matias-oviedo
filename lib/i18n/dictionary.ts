@@ -128,48 +128,21 @@ export const dictionary = {
   },
 
   // ------------------------------------------------------------------ TUTE
-  // Textos del widget de chat (components/TuteWidget.tsx). Mientras el
-  // backend real (RAG + AWS Bedrock) no esté conectado, el widget arranca
-  // con un aviso de "en construcción" y responde en modo demo.
+  // Textos del widget de chat (components/TuteWidget.tsx). El backend real
+  // (RAG + AWS Bedrock vía API Gateway + Lambda) ya está conectado.
   tute: {
+    // Subtítulo que se muestra en el header, al lado del nombre.
+    subtitle: { es: "asistente de Mati", en: "Mati's assistant" },
+
     // Primer mensaje fijo que Tute manda al abrir el chat, antes de que el
     // usuario escriba nada.
-    constructionNotice: {
+    greeting: {
       es:
-        "¡Hola! Soy Tute 👋 Un aviso antes de arrancar: todavía estoy en construcción. " +
-        "Mi cerebro de verdad (RAG + AWS Bedrock) se está terminando de conectar, así que " +
-        "por ahora te contesto con respuestas de ejemplo armadas a mano. Igual sirven para " +
-        "que veas cómo va a ser la conversación cuando esté 100% online.",
+        "¡Hola! Soy Tute, el asistente de Mati. Preguntame lo que quieras sobre su " +
+        "experiencia, sus proyectos o cómo me armó.",
       en:
-        "Hi! I'm Tute 👋 Quick heads-up before we start: I'm still under construction. " +
-        "My real brain (RAG + AWS Bedrock) is still being wired up, so for now I reply with " +
-        "hand-written sample answers. They're still handy for seeing how the conversation " +
-        "will feel once I'm fully online.",
-    },
-    // Banda persistente arriba del chat.
-    devBadge: {
-      es: "🚧 En construcción — respuestas de ejemplo mientras conecto el backend real (RAG + AWS Bedrock).",
-      en: "🚧 Under construction — sample replies while I wire up the real backend (RAG + AWS Bedrock).",
-    },
-    // Estado que se muestra en el header, al lado del nombre.
-    demoStatus: { es: "● en construcción", en: "● under construction" },
-
-    // Conversación de ejemplo precargada en el chat (modo demo). Cuando el
-    // backend real esté conectado deja de tener sentido, pero mientras tanto
-    // muestra el tipo de ida y vuelta que va a poder tener Tute.
-    demoUserQ1: { es: "¿Qué hace Matías?", en: "What does Matías do?" },
-    demoTuteA1: {
-      es: "Soporte de aplicaciones hace 6 años, y desde ahí sumó programación, AWS e IA. ¿Querés que te cuente de algún proyecto puntual?",
-      en: "Application support for 6 years, and from there he picked up programming, AWS and AI. Want me to tell you about a specific project?",
-    },
-    demoUserQ2: { es: "¿Cómo te hicieron a vos?", en: "How were you built?" },
-    demoTuteA2: {
-      es: "Buena pregunta - te llevo a la explicación completa de cómo me armaron y me testean 👇",
-      en: "Good question - let me take you to the full rundown of how I was built and how I'm tested 👇",
-    },
-    demoTuteA2Link: {
-      es: "Ver cómo me testean →",
-      en: "See how I'm tested →",
+        "Hi! I'm Tute, Mati's assistant. Ask me anything about his experience, his " +
+        "projects, or how I was built.",
     },
 
     // Mensaje de fallback cuando el backend real no responde bien (falla el
@@ -492,8 +465,8 @@ export const dictionary = {
           title: { es: "Tute (Agente de IA)", en: "Tute (AI Agent)" },
           period: { es: "2026", en: "2026" },
           desc: {
-            es: "Agente conversacional embebido en este mismo portfolio. RAG sobre una base de conocimiento propia y tool use, todo armado a mano sin frameworks de agentes. Hoy corre en modo demo con respuestas simuladas; el backend serverless (API Gateway + Lambda) está en integración.",
-            en: "Conversational agent embedded in this portfolio. RAG over a custom knowledge base plus tool use, all built by hand without agent frameworks. It currently runs in demo mode with simulated responses; the serverless backend (API Gateway + Lambda) is being integrated.",
+            es: "Agente conversacional embebido en este mismo portfolio. RAG sobre una base de conocimiento propia y tool use, todo armado a mano sin frameworks de agentes. Ya corre en vivo contra su backend serverless (API Gateway + Lambda).",
+            en: "Conversational agent embedded in this portfolio. RAG over a custom knowledge base plus tool use, all built by hand without agent frameworks. It now runs live against its serverless backend (API Gateway + Lambda).",
           },
           tags: [
             { es: "IA", en: "AI" },

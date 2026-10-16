@@ -43,9 +43,9 @@ function resolveTuteLink(href: string): { internal: boolean; path: string } {
 }
 
 // Arma el "history" que le mandamos al backend: los últimos 10 mensajes de
-// la conversación real (sin la semilla, el aviso de construcción ni la
-// respuesta de playDemo, que no entran a este arreglo), mapeados al formato
-// { role, content } que espera la Lambda.
+// la conversación real (sin el saludo inicial ni la respuesta de playDemo,
+// que no entran a este arreglo), mapeados al formato { role, content } que
+// espera la Lambda.
 function buildHistoryPayload(msgs: Message[]) {
   return msgs
     .filter((m) => !m.demo)
@@ -56,29 +56,17 @@ function buildHistoryPayload(msgs: Message[]) {
     }));
 }
 
-// Mensajes precargados que se muestran al abrir el chat: el aviso de "en
-// construcción" y una conversación de ejemplo (modo demo). Se arman con el
-// idioma activo, así el toggle ES/EN también los traduce. Cuando el backend
-// real esté conectado, esto se reduce al historial vacío.
+// Primer mensaje de Tute al abrir el chat: un saludo corto que se arma con
+// el idioma activo (así el toggle ES/EN también lo traduce). Vive fuera del
+// state de la conversación, por eso nunca entra al "history" que mandamos
+// al backend.
 function buildSeedMessages(t: Translate): Message[] {
-  const d = dictionary.tute;
-  return [
-    { role: "tute", text: t(d.constructionNotice) },
-    { role: "user", text: t(d.demoUserQ1) },
-    { role: "tute", text: t(d.demoTuteA1) },
-    { role: "user", text: t(d.demoUserQ2) },
-    {
-      role: "tute",
-      text: t(d.demoTuteA2),
-      link: { href: "/evals", label: t(d.demoTuteA2Link) },
-    },
-  ];
+  return [{ role: "tute", text: t(dictionary.tute.greeting) }];
 }
 
-// ACA REEMPLAZAR: esta es la respuesta de relleno que se usa en "modo demo"
-// (cuando todavía no hay una API real conectada). Cuando el backend esté
-// funcionando, este texto deja de usarse - la respuesta real la arma el
-// Lambda de /aws/lambda/tute-handler.
+// Respuesta de relleno para el modo demo: un fallback silencioso que solo
+// corre en desarrollo local, cuando no hay NEXT_PUBLIC_TUTE_API_URL
+// configurada, para poder probar el front sin depender de la API real.
 const DEMO_REPLY = "Así voy a responder en vivo una vez que esté conectado a la API 👋";
 
 function sleep(ms: number) {
@@ -177,12 +165,9 @@ const TuteWidget = forwardRef<TuteWidgetHandle>(function TuteWidget(_, ref) {
     } else {
       await sleep(2000); // simula el tiempo de "pensar" mientras no hay API real conectada
 
-      // ACA REEMPLAZAR: esto es un placeholder de prueba nomás, para tener
-      // algo que mostrar en modo demo - busca la palabra "evals" a lo bruto
-      // en el texto del usuario. Cuando el backend real esté conectado esta
-      // lógica no importa en absoluto: es la Lambda la que decide, según el
-      // significado de la pregunta (no la palabra literal), cuándo llamar a
-      // la herramienta redirigir_a_evals().
+      // Placeholder nomás del modo demo: busca la palabra "evals" a lo bruto
+      // en el texto del usuario. En producción esta rama no corre nunca,
+      // porque NEXT_PUBLIC_TUTE_API_URL siempre está seteada (.env.production).
       if (text.toLowerCase().includes("evals")) {
         reply = {
           text: "Tengo tool use real y hago RAG sobre la base de conocimiento de Matías - no invento nada. Podés ver los casos de prueba que uso para chequear que respondo bien 👇",
@@ -217,11 +202,8 @@ const TuteWidget = forwardRef<TuteWidgetHandle>(function TuteWidget(_, ref) {
           <img className="tute-avatar-img" src={TUTE_HEAD_IMAGES[tuteState]} alt="Tute" />
           <div>
             <b>Tute</b>
-            <span className="tute-status-demo">{t(dictionary.tute.demoStatus)}</span>
+            <span>{t(dictionary.tute.subtitle)}</span>
           </div>
-        </div>
-        <div className="tute-dev-notice" role="status">
-          {t(dictionary.tute.devBadge)}
         </div>
         <div className="chat-log" ref={logRef}>
           {allMessages.map((m, i) => {
