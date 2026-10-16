@@ -345,6 +345,15 @@
   @keyframes pulse { 0% { transform: scale(0.9); opacity: 0.5; } 100% { transform: scale(1.35); opacity: 0; } }
   .tute-header b { font-family: var(--font-display); font-size: 16px; display: block; }
   .tute-header span { font-size: 12.5px; color: var(--success); font-family: var(--font-mono); }
+  .tute-status-online { display: inline-flex; align-items: center; gap: 6px; }
+  /* Mismo puntito de estado que el .logline de la hero (reusa --success, que
+     ya está calculado con contraste AA en los dos temas). */
+  .tute-status-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--success);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--success) 20%, transparent);
+    flex-shrink: 0;
+  }
 
   /* Banda de aviso "en desarrollo" de la página /evals, mientras esa sección
      no tiene evals reales corriendo contra el backend. */

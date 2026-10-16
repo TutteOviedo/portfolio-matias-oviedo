@@ -76,6 +76,11 @@ function sleep(ms: number) {
 const TuteWidget = forwardRef<TuteWidgetHandle>(function TuteWidget(_, ref) {
   const { t } = useLanguage();
   const router = useRouter();
+  // NEXT_PUBLIC_TUTE_API_URL apunta al endpoint de API Gateway que dispara
+  // el Lambda (ver /aws/lambda/tute-handler y aws-roadmap.md). En produccion
+  // siempre esta seteada (.env.production); mientras no lo esté, el chat
+  // sigue funcionando en modo demo para no bloquear el desarrollo del sitio.
+  const apiUrl = process.env.NEXT_PUBLIC_TUTE_API_URL;
   const [isOpen, setIsOpen] = useState(false);
   const [tuteState, setTuteState] = useState<TuteState>("idle");
   // Solo el historial que se va agregando (respuesta de demo, mensajes del
@@ -110,7 +115,10 @@ const TuteWidget = forwardRef<TuteWidgetHandle>(function TuteWidget(_, ref) {
 
   function openWidget() {
     setIsOpen(true);
-    if (!demoPlayedRef.current) {
+    // El mensaje de playDemo es parte del modo demo nomás: con la API real
+    // conectada el chat tiene que abrir solo con el saludo, sin un segundo
+    // mensaje de relleno.
+    if (!apiUrl && !demoPlayedRef.current) {
       demoPlayedRef.current = true;
       playDemo();
     }
@@ -136,12 +144,6 @@ const TuteWidget = forwardRef<TuteWidgetHandle>(function TuteWidget(_, ref) {
     scrollToBottom();
 
     let reply: Omit<Message, "role"> = { text: DEMO_REPLY };
-
-    // NEXT_PUBLIC_TUTE_API_URL apunta al endpoint de API Gateway que dispara
-    // el Lambda (ver /aws/lambda/tute-handler y aws-roadmap.md), configurado
-    // en .env.local. Mientras no esté seteada, el chat sigue funcionando en
-    // "modo demo" para no bloquear el resto del desarrollo del sitio.
-    const apiUrl = process.env.NEXT_PUBLIC_TUTE_API_URL;
 
     if (apiUrl) {
       try {
@@ -202,7 +204,14 @@ const TuteWidget = forwardRef<TuteWidgetHandle>(function TuteWidget(_, ref) {
           <img className="tute-avatar-img" src={TUTE_HEAD_IMAGES[tuteState]} alt="Tute" />
           <div>
             <b>Tute</b>
-            <span>{t(dictionary.tute.subtitle)}</span>
+            {/* El indicador de online solo tiene sentido con la API real
+                conectada - en modo demo no hay nada corriendo del otro lado. */}
+            {apiUrl && (
+              <span className="tute-status-online">
+                <span className="tute-status-dot" />
+                {t(dictionary.tute.online)}
+              </span>
+            )}
           </div>
         </div>
         <div className="chat-log" ref={logRef}>

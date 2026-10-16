@@ -131,8 +131,11 @@ export const dictionary = {
   // Textos del widget de chat (components/TuteWidget.tsx). El backend real
   // (RAG + AWS Bedrock vía API Gateway + Lambda) ya está conectado.
   tute: {
-    // Subtítulo que se muestra en el header, al lado del nombre.
-    subtitle: { es: "asistente de Mati", en: "Mati's assistant" },
+    // Indicador de estado en el header, al lado del nombre. Se muestra solo
+    // cuando hay API real conectada (ver TuteWidget.tsx). "Online" se
+    // escribe igual en los dos idiomas, pero pasa por el diccionario igual
+    // para seguir el mismo patrón que el resto de los textos del widget.
+    online: { es: "Online", en: "Online" },
 
     // Primer mensaje fijo que Tute manda al abrir el chat, antes de que el
     // usuario escriba nada.
