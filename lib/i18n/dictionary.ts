@@ -345,6 +345,29 @@ export const dictionary = {
             { es: "Sector Bancario", en: "Banking Sector" },
           ],
         },
+        {
+          title: {
+            es: "Empleado Administrativo",
+            en: "Administrative Employee",
+          },
+          company: {
+            es: "Biolap S.A. · Tiempo completo",
+            en: "Biolap S.A. · Full-time",
+          },
+          period: {
+            es: "Jul 2017 - Dic 2020 · 3 años 6 meses",
+            en: "Jul 2017 - Dec 2020 · 3 years 6 months",
+          },
+          desc: {
+            es: "Me encargué del control de stock e inventario, la atención a clientes particulares y profesionales de la salud, y la gestión de documentación médica.",
+            en: "I handled stock and inventory control, customer service for private clients and healthcare professionals, and medical documentation management.",
+          },
+          tags: [
+            { es: "Control de Stock", en: "Stock Control" },
+            { es: "Atención al Cliente", en: "Customer Service" },
+            { es: "Gestión Documental", en: "Document Management" },
+          ],
+        },
       ],
     },
 
