@@ -3,8 +3,10 @@
 Portfolio en Next.js (App Router + TypeScript), migrado desde un prototipo
 estático en HTML. Se exporta como sitio 100% estático (`output: 'export'` ->
 carpeta `/out`) y se hostea en AWS (S3 + CloudFront + Route53). El chat de
-"Tute" es un backend serverless aparte (API Gateway + Lambda); ver
-`aws-roadmap.md` para el detalle de infraestructura.
+"Tute" está en producción en matiasoviedo.com.ar, con un backend serverless
+aparte: API Gateway (HTTP API) + Lambda + Bedrock (Claude Haiku 4.5), con la
+base de conocimiento en S3 y el rate limit en DynamoDB. Ver `aws-roadmap.md`
+para el detalle de infraestructura.
 
 ## Páginas
 
@@ -33,9 +35,12 @@ npm install
 npm run dev
 ```
 
-Abrí http://localhost:3000. El chat de Tute funciona en **modo demo** por
-default (respuestas simuladas, sin pegarle a ninguna API), así que se puede
-laburar todo el front sin depender del backend.
+Abrí http://localhost:3000. Para que el chat le pegue al backend real de Tute,
+copiá `.env.local.example` a `.env.local` (que no se sube al repo) y poné en
+`NEXT_PUBLIC_TUTE_API_URL` la misma URL que está en `.env.production`. Sin esa
+variable, el widget cae a un modo demo silencioso (respuesta simulada, sin
+pegarle a ninguna API), útil para laburar el front sin gastar llamadas al
+modelo.
 
 ## Internacionalización (ES / EN)
 
@@ -82,8 +87,16 @@ contenido se estabilice se van moviendo las claves al diccionario de a poco
   (por ejemplo el botón "¡Preguntale!" de la home).
 - `components/TuteWidget.tsx` es autocontenido: maneja sus mensajes, el estado
   del avatar (`idle` / `thinking` / `talking`, mapeado en `lib/tuteImages.ts`)
-  y el input. En modo demo responde con un texto de relleno; cuando
-  `NEXT_PUBLIC_TUTE_API_URL` está seteada, hace `POST` a ese endpoint.
+  y el input. Cuando `NEXT_PUBLIC_TUTE_API_URL` está seteada (en producción
+  siempre, vía `.env.production`), hace `POST` a ese endpoint con
+  `{ message, history }` y muestra el `reply` (y el `link`, si viene). Si la
+  variable no está, responde con un texto de relleno (modo demo, solo para
+  desarrollo local).
+- El backend es la Lambda `aws/lambda/tute-handler/index.mjs`: rate limit en
+  DynamoDB, Claude Haiku 4.5 vía Bedrock con tool use (`search_knowledge_base`
+  con RAG armado a mano sobre embeddings de Titan guardados en S3,
+  `get_github_repo_info` y `redirigir_a_evals`). El CORS lo maneja API
+  Gateway, no la Lambda.
 
 ## Sistema de tema
 
@@ -110,40 +123,34 @@ No hay paso manual. Necesita estos secrets en el repo: `AWS_ACCESS_KEY_ID`,
 
 Para revisar el estático a mano: `npm run build` y mirás `/out`.
 
-### Basic Auth en producción
+El workflow solo despliega el sitio estático. La Lambda de Tute se despliega
+aparte (ver `aws-roadmap.md`).
 
-Mientras se termina de integrar el backend de Tute, el sitio en producción
-está detrás de **Basic Auth**, implementado con una **CloudFront Function**
-(viewer-request) sobre la distribución. Esa función no está en este repo (es
-configuración de infra en AWS); el sitio local y el build no tienen esa capa.
+### robots.txt
 
-Como refuerzo, `public/robots.txt` bloquea toda la indexación (`Disallow: /`).
-Hay que actualizarlo cuando se saque el Basic Auth.
+El sitio ya es público (se sacó el Basic Auth que tenía mientras se integraba
+el backend de Tute), pero `public/robots.txt` sigue bloqueando toda la
+indexación (`Disallow: /`). Hay que actualizarlo: permitir `/` y decidir qué
+hacer con `/evals`.
 
 ## Qué falta completar
 
 Buscá `ACA REEMPLAZAR` en el código. Lo que sigue pendiente hoy:
 
-- **`components/Hero.tsx`** - la foto real de Matías (hoy el orb muestra el
-  placeholder `[ foto de Matías ]`).
-- **`components/Projects.tsx`** - la URL real del repo de JobFit (hoy el link
-  apunta a `#`; el proyecto está en desarrollo).
-- **`.env.local.example`** - `NEXT_PUBLIC_TUTE_API_URL`, la Invoke URL de API
-  Gateway. Sin esto, el chat queda en modo demo. (Copiá el archivo a
-  `.env.local`, que no se sube al repo.)
-- **`components/TuteWidget.tsx`** - cómo se parsea la respuesta del Lambda
-  (`data.reply`), el texto de relleno del modo demo, y la lógica placeholder
-  que detecta la palabra "evals".
-- **`app/evals/page.tsx`** - `EVAL_CATEGORIES` es data de ejemplo a mano, y el
-  link "Ver en GitHub" apunta a `TU-USUARIO/ACA-REEMPLAZAR`.
-- **`aws/lambda/tute-handler/index.mjs`** - el más grande: elegir proveedor de
-  IA (Bedrock o Anthropic), el system prompt real de Tute, el tool use, el
-  rate limiting con DynamoDB, el CORS con el dominio real y el llamado real al
-  modelo. Es un esqueleto, no está desplegado.
+- **`components/EvalsContent.tsx`** - los casos de `/evals` siguen siendo data
+  de ejemplo a mano; hay que reemplazarlos por corridas reales de evals.
+- **`components/curriculum/ProjectsSidebar.tsx`** - la URL del repo de Tute
+  en el sidebar del CV (hoy apunta a `#`).
+- **`public/robots.txt`** - aflojar las reglas ahora que el sitio es público
+  (ver arriba).
+- **`.env.local.example`** - el comentario todavía habla de "una vez que
+  despliegues el Lambda"; la URL real ya está en `.env.production`.
 
 Respecto de versiones anteriores del README, ya quedaron resueltos: el mail y
-los links de LinkedIn y GitHub del footer, y el link de GitHub de la primera
-tarjeta de Proyectos (Cloud Resume Challenge).
+los links de LinkedIn y GitHub del footer, los links de GitHub de Proyectos
+(Cloud Resume Challenge y JobFit), el link "Ver en GitHub" de `/evals`, y
+sobre todo la Lambda de Tute, que dejó de ser un esqueleto y es el código que
+corre en producción.
 
 ## Stack
 
@@ -191,11 +198,11 @@ lib/
 
 public/
   og-image.png
-  robots.txt              bloquea toda la indexación mientras el sitio esté con Basic Auth;
-                          hay que aflojar las reglas cuando se saque esa capa
+  robots.txt              todavía bloquea toda la indexación; falta aflojar las reglas
+                          ahora que el sitio es público
   tute/                   avatar de Tute (idle/talking/thinking, head/full)
   curriculum/             cv-matias-oviedo.pdf
 
-aws/lambda/tute-handler/  esqueleto del Lambda del chat (se despliega aparte)
+aws/lambda/tute-handler/  Lambda del chat en producción (Bedrock + RAG + tools; se despliega aparte)
 .github/workflows/deploy.yml   build + deploy a S3 + invalidación de CloudFront
 ```
