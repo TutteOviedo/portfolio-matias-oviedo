@@ -146,12 +146,13 @@ sorpresas en la factura.
    por hora por IP, y si se pasa devuelve un 429 con un mensaje fijo de Tute
    sin gastar ni un token. Como el TTL de DynamoDB puede tardar en borrar el
    item, la Lambda reinicia la ventana a mano cuando ya venció.
-2. **Throttling en API Gateway:** un límite de requests por segundo a nivel
-   de la API completa, como segunda barrera además del rate limit por
-   usuario.
-3. **AWS Budgets:** una alerta de presupuesto mensual (podés poner un umbral
-   bajo, como USD 5 o 10) que te avisa por mail si el gasto se empieza a ir
-   de rango - señal temprana de que algo raro está pasando.
+2. **Throttling en API Gateway:** la API `tute-api` tiene un límite de 5
+   requests por segundo con burst de 10, a nivel de la API completa. Es la
+   segunda barrera además del rate limit por IP: frena picos de tráfico
+   antes de que lleguen a la Lambda.
+3. **AWS Budgets:** el presupuesto `Tute-budget`, de USD 10 mensuales, es la
+   señal temprana de que el gasto se está yendo de rango y algo raro está
+   pasando.
 
 ---
 
